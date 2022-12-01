@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 
-// Generic types : Templates
+// Generic types : Templates 
 
 template <typename T>
 
