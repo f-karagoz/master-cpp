@@ -105,30 +105,37 @@ void print_guests(my_container* my_guests, int index)
 	cout << "-----------------------------\n\n";
 }
 
-void remove_guest(my_container* my_guests, int index)
+bool get_guest(my_container* container, int index, guest& ret)
 {
-	auto it = my_guests->begin();
-
-	for (int i = 0; i < index; ++i)
-		it++;
-
-	my_guests->erase(it);
+	auto it = container->begin();
+	for (int i = 0; i < index; ++i, ++it)
+		if (it == container->end())
+			return false;
+	ret = *it;
+	return true;
 }
 
-float average_age(my_container* my_guests)
+bool delete_guest(my_container* container, int index)
 {
-	int total_age = 0;
-	int nGuests = 0;
-	auto it = my_guests->begin();
+	auto it = container->begin();
 
-	while (it != my_guests->end())
-	{
-		total_age += it->age;
-		nGuests++;
-		it++;
-	}
+	for (int i = 0; i < index; ++i, ++it)
+		if (it == container->end())
+			return false;
 
-	return (float)total_age / nGuests;
+	container->erase(it);
+
+	return true;
+}
+
+float average_age(const my_container& container)
+{
+	float avg = 0.0f;
+
+	for (guest g : container)
+		avg += g.age;
+
+	return avg / container.size();
 }
 
 int main(void)
@@ -137,9 +144,23 @@ int main(void)
 	read_file(my_guests);
 	print_guests(my_guests);
 	print_guests(my_guests, 3);
-	remove_guest(my_guests, 3);
+
+	guest temp;
+	if (get_guest(my_guests, 3, temp))
+	{
+		cout << "Name:\t" << temp.name << endl;
+		cout << "Gender:\t" << temp.gender << endl;
+		cout << "Age:\t" << temp.age << endl;
+		cout << "-----------------------------\n";
+	}
+	else
+		cout << "get_guest_failed!" << endl;
+
+	if (!delete_guest(my_guests, 3))
+		cout << "delete_guest failed!" << endl;
+
 	print_guests(my_guests);
-	cout << "Average age of the group is : " << average_age(my_guests) << endl;
+	cout << "Average age of the group is : " << average_age(*my_guests) << endl;
 
 	return 0;
 }
