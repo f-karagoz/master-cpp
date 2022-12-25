@@ -21,6 +21,7 @@ void kitchen_cleaner()
 int main(void)
 {
     std::thread olivia(kitchen_cleaner);
+    olivia.detach();
     
     for (int i = 0; i < 3; ++i)
     {
@@ -29,7 +30,7 @@ int main(void)
     }
     
     printf("Barron is done!\n");
-    olivia.join();
+//    olivia.join();
     
     return 0;
 }
@@ -50,4 +51,18 @@ int main(void)
  Olivia cleaned the kitchen.
  Olivia cleaned the kitchen.
  Program ended with exit code: 9
+ */
+
+// If the child thread is deatched
+// the child thread is for sure to be terminated
+// after the parent thread is terminated
+
+/* Detached thread
+ Barron is cooking...
+ Olivia cleaned the kitchen.
+ Barron is cooking...
+ Olivia cleaned the kitchen.
+ Barron is cooking...
+ Barron is done!
+ Program ended with exit code: 0
  */
