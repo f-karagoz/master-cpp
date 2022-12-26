@@ -1,0 +1,152 @@
+Parallel and Concurrent Programming - I
+
+1. Parallel Computing Hardware
+2. Threads and Processes
+3. Mutual Exclusion
+4. Locks
+5. Liveness
+
+We have previously covered the hardware part
+Right now we are studying thread and processes
+
+2. THREADS AND PROCESSES
+
+PID = Process ID
+Processes can have multiple Threads inside them
+
+Concurrency
+Ability of the program to be broken down into independently executing small programs
+Creates illusion of running in parallel
+In reality different threads gets processed in a divided time
+
+Concurrency
+- Ability to deal with things at once
+
+Parallelism
+- Doing things at the same time
+
+IO devices can run concurrently but we may need parallelism for big mathematical operations
+
+Execution Scheduling
+- OS provides scheduler
+- Scheduler matches processes with processor cores
+- Context Switch
+	when a scheduler devices its time for context switch the process changes
+
+Scheduling Goals
+- Maximize throughput
+- Maximize fairness
+- Minimize wait time
+- Minimize latency
+
+Scheduler is handled under the hood by the OS
+
+Thread Life Cycle
+Main thread calls other threads. Main thread is the last one to terminate.
+
+New Thread -> "start" -> Runnable -> "waiting" -> Blocked
+				<- "resume" <-
+			   |
+			   v
+			"finished"
+
+			   |
+			   v
+			Terminated
+ 
+join()
+Wait until another thread completes its execution
+
+
+
+Detached Thread
+
+Garbage collector:
+- collects unused memory
+- runs in a continuous loop (therefore never exists)
+
+Daemon (Background) Thread
+- we need to explicitly set them as daemon
+- by detaching them
+- make sure there is no side effects for premature exit of the thread
+
+
+3. MUTUAL EXCLUSION
+
+Identifying possible dependencies between threads
+
+Data Race: Two or more concurrent threads access the same memory location
+		OR at least one thread is modifying it
+
+We can defend agains data race by identifying critical sections of code
+Critical Section: part of a program accesses data structure memory or an external device
+One thread needs to access a critical section one time at a time
+The operation to acquire to lock is atomic operation
+
+Atomic Operations:
+- Execute as a single action, relative to other threads
+- Cannot be interrupted by other concurrent threads
+
+
+Acquiring the mutex is an atomic action and cannot be interrupted
+
+Acquiring a Lock: If lock is already taken, block/wait for it to be available
+
+!!! Keep the protected critical sections of the code as short as possible
+
+Two solutions covered:
+- Mutex locks for critical code sections
+- Atomic types for protecting data structures
+
+4. LOCKS
+
+Recursive Mutex
+If a threads tries to lock a mutex already locked the thread enters a waiting list for that mutex
+= dead lock
+
+Reentrant Mutex
+- Can be locked multiple times by the SAME thread
+- Needs to unlocked the times its locked
+
+Terms: -reentrant mutex -recursive mutex -reentrant lock -recursive lock
+
+Try Lock
+If we use regular mutex lock the thread program flow gets into waiting state until the mutex is unlocked
+If we use try lock we can skip the locked part and continue with the other program lines
+If the thread is locked it will return False. If the the thread is unlocked it will lock the thread and return True.
+
+Shared Mutex
+Read and write lock
+Both place shared read lock and both threads can read it
+IF one threads still holds a read lock other thread need to wait in order to place a write lock
+Only one thread can hold a write lock
+IF #reader > #writers use a shared mutex
+ELSE no need, just use a regular mutex
+
+In shared mutex only one thread can have exclusive ownership over a shared_mutex whereas unlimited number of threads can have a shared ownership of a shared_mutex.
+
+
+5. LIVENESS
+- Properties that require a system to make progress
+- Members may have to "take turns" in critical sections
+
+Deadlock
+- Each member of a group is waiting for other member to take action
+
+Abandoned Lock
+If one thread acquires the lock and terminates before releasing the lock
+Solution: std::shared_mutex
+So the destructor of the shared_mutex will unlock the lock
+
+Starvation
+Thread is unable to access required resource
+Therefore thread is unable to process
+Higher priority threads are scheduled to execute more often
+
+
+Livelock
+Often caused by the algorithms that are intended to detect and recover from deadlocks
+If one or more thread or process takes action to resolve a deadlock then those threads may end up being overly "polite"
+
+
+--- END ---
