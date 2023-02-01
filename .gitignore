@@ -3,6 +3,11 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+#Specific
+*/Ex_Files_C_Plus_Plus_Parallel_Prog
+*/Ex_Files_Parallel_C_Plus_Plus_Pt2
+*.zip
+
 #Xcode
 *.xcodeproj
 
