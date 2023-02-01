@@ -23,7 +23,7 @@ void hungry_person(int id)
         //v pick up the slow cooker lid
         std::unique_lock<std::mutex> lid_lock(show_cooker_lid);
         //v is it NOT your turn to take the soup?
-        if ((id != soup_servings % 2) && (soup_servings > 0))
+        if ((id != soup_servings % 5) && (soup_servings > 0))
         {
             put_lid_back++;                 // Tracks the number of times waited for lock to be released
             soup_taken.wait(lid_lock);      // We pass the lock to the conditional vaiable
@@ -32,7 +32,7 @@ void hungry_person(int id)
         {
             soup_servings--;                // it's your turn take soup:
             lid_lock.unlock();
-            soup_taken.notify_one();        // Operation finished. Wakes up other thread.
+            soup_taken.notify_all();        // Operation finished. Wakes up other thread.
         }
     }
     printf("Person %d put the lid back %u times.\n", id, put_lid_back);
@@ -40,9 +40,9 @@ void hungry_person(int id)
 
 int main (void)
 {
-    std::thread hungry_threads[2];
+    std::thread hungry_threads[5];
     
-    for (int i=0; i < 2; ++i)
+    for (int i=0; i < 5; ++i)
         hungry_threads[i] = std::thread(hungry_person, i);
         
     for (auto& ht : hungry_threads)
@@ -51,14 +51,23 @@ int main (void)
     return 0;
 }
 
-/* OUTPUT: without condition vaiable
+/* OUTPUT: without condition vaiable (2 threads)
  Person 0 put the lid back 1401 times.
  Person 1 put the lid back 1162 times.
  Program ended with exit code: 0
  */
 
-/* OUTOUT: with condition variables
+/* OUTOUT: with condition variables (2 threads)
  Person 1 put the lid back 4 times.
  Person 0 put the lid back 5 times.
+ Program ended with exit code: 0
+ */
+
+/* OUTOUT: with condition variables (5 threads)
+ Person 0 put the lid back 2 times.
+ Person 2 put the lid back 2 times.
+ Person 1 put the lid back 3 times.
+ Person 4 put the lid back 1 times.
+ Person 3 put the lid back 3 times.
  Program ended with exit code: 0
  */
