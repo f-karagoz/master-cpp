@@ -1,0 +1,60 @@
+** Topics: **
+
+1. Synchronization
+2. Barriers
+3. Asynchronous Tasks
+4. Evaluating Parallel Performance
+5. Designing Parallel Programs
+6. Challenge Problems
+
+** Tools: **
+
+GCC 7.4.0
+make 4.2.1
+C++17 Standard
+Cygwin on Windows 10
+	installed gcc-g++ and make
+	add to system path
+boost cpp library
+
+******** LECTURE 1 : Synchronization ********
+
+Problem:
+Busy waiting || Spinning
+Repeatedly enquiring lock to check
+
+Solution: Condition Variable
+- associated with mutex
+- protect section of code with mutual exclusion
+
+With conditional variables thread can place a lock when enetered to the critical section
+After the thread exited the critial section releases the lock
+Wakes other waiting thread in the waiting room
+
+3 operations:
+- wait
+- signal
+- broadcast
+
+wait:
+- Automatically release lock on the mutex
+- Go to sleep and enter waiting queue
+- Reacquire lock when woken up
+
+signal:
+- Wake up one thread from condition variable queue
+- Also called 'notify' or 'wake'
+
+broadcast:
+- Wake up all threads from condition variable queue
+- Also called 'notify' all or 'wake all'
+
+Tip:
+By making thread wait in a while loop we can prevent spurious wake up.
+In some OSs threads can wake up when not intended to.
+
+
+while !(SOME_CONDITION)
+{
+    cv.wait ( lk );
+}
