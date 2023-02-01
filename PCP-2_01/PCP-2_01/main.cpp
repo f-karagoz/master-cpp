@@ -9,26 +9,30 @@
 //#include <iostream>
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 
 int soup_servings = 10;
 std::mutex show_cooker_lid;
+std::condition_variable soup_taken;
 
 void hungry_person(int id)
 {
-    int put_lid_back = 0;       // to track n times lid put back
+    int put_lid_back = 0;                   // to track n times lid put back
     while (soup_servings > 0)
     {
         //v pick up the slow cooker lid
         std::unique_lock<std::mutex> lid_lock(show_cooker_lid);
-        //v is it your turn to take the soup?
-        if ((id == soup_servings % 2) && (soup_servings > 0))
+        //v is it NOT your turn to take the soup?
+        if ((id != soup_servings % 2) && (soup_servings > 0))
         {
-            soup_servings--;    // it's your turn take soup:
+            put_lid_back++;                 // Tracks the number of times waited for lock to be released
+            soup_taken.wait(lid_lock);      // We pass the lock to the conditional vaiable
         }
-        else
+        if (soup_servings > 0 )
         {
-            // it's not your turn. put lid back.
-            put_lid_back++;
+            soup_servings--;                // it's your turn take soup:
+            lid_lock.unlock();
+            soup_taken.notify_one();        // Operation finished. Wakes up other thread.
         }
     }
     printf("Person %d put the lid back %u times.\n", id, put_lid_back);
@@ -50,5 +54,11 @@ int main (void)
 /* OUTPUT: without condition vaiable
  Person 0 put the lid back 1401 times.
  Person 1 put the lid back 1162 times.
+ Program ended with exit code: 0
+ */
+
+/* OUTOUT: with condition variables
+ Person 1 put the lid back 4 times.
+ Person 0 put the lid back 5 times.
  Program ended with exit code: 0
  */
