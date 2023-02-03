@@ -8,17 +8,29 @@
 
 #include <thread>
 #include <queue>
+#include <mutex>
+#include <condition_variable>
 
 class ServingLine
 {
 public:
     void serve_soup(int i)
     {
+        std::unique_lock<std::mutex> ladle_lock(ladle);
         soup_queue.push(i);
+        ladle_lock.unlock();
+        soup_served.notify_one();
     }
     
     int take_soup(void)
     {
+        std::unique_lock<std::mutex> ladle_lock(ladle);
+        while (soup_queue.empty())
+        {
+            // Release the ladle_lock and wait here
+            // until a procuder thread adds a soup and releases the ladle_lock
+            soup_served.wait(ladle_lock);   // Condition variable only accepts unique lock
+        }
         int bowl = soup_queue.front();
         soup_queue.pop();
         return bowl;
@@ -26,6 +38,8 @@ public:
     
 private:
     std::queue<int> soup_queue;
+    std::mutex ladle;
+    std::condition_variable soup_served;
 };
 
 ServingLine serving_line = ServingLine();
@@ -72,7 +86,20 @@ int main (void)
     return 0;
 }
 
-/* C++ library is not thread safe:
+/* RESULT: C++ library is not thread safe:
  exit;
  zsh: segmentation fault
  */
+
+/* RESULT: After implementing condition variable and mutex, total of 10k soup consumed
+ Producer done serving soup!
+ Consumer ate 4672 bowls of soup.
+ Consumer ate 5328 bowls of soup.
+ Program ended with exit code: 0
+ */
+
+// By default C++ queue is not multi-thread safe.
+// We can implement out own solution depending on the schenario.
+// When Creating as single thread application queue's simplicity
+// prevents the unnecessaty overhead.
+// Check: boost::lockfree::queue for thread sage queue
