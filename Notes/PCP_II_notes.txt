@@ -19,6 +19,8 @@ boost cpp library
 
 ******** LECTURE 1 : Synchronization ********
 
+*** Condition Variable ***
+
 Problem:
 Busy waiting || Spinning
 Repeatedly enquiring lock to check
@@ -58,3 +60,53 @@ while !(SOME_CONDITION)
 {
     cv.wait ( lk );
 }
+
+
+*** Producer - Consumer ***
+
+A common design pattern in concurrent programming is
+the Producer-Consumer architecture.
+
+Producer thread(s)
+- Adds elements to the shared data structure
+
+Consumer thread(s)
+- Remove elements from shared data structure
+
+Queue (FIFO)
+- first item added is the first item to be consumed
+
+Challenges
+- Consider how fast producer produces and consumer consumes
+
+Unbound Queue
+- in theory limitless space but limited by memory
+
+Average Rate Of Production < Average Rate Of Consumption
+
+Pipeline
+- Chain of processing elements
+- Series of producer and consumers are chained
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
