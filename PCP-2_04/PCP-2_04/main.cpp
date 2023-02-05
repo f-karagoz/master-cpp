@@ -1,0 +1,85 @@
+//
+//  main.cpp
+//  PCP-2_04
+//
+//  Created by Furkan Karagöz on 05.02.2022.
+//  Topic:      Race condition
+//  Example:    Deciding how many bags of chips to buy for the party
+
+#include <thread>
+#include <mutex>
+
+unsigned int bags_of_chips = 1;     // Start with one bag on the list
+std::mutex pencil;
+
+void cpu_work(unsigned long workUnits)
+{
+    unsigned long x = 0;
+    for (unsigned long i = 0; i < workUnits * 1000000; ++i)
+        x++;
+    return;
+}
+
+void barron_shopper()
+{
+    cpu_work(1);        // do a bit of work fist
+    std::scoped_lock<std::mutex> lock(pencil);
+    bags_of_chips *= 2;
+    printf("Barron DOUBLED bags of chips.\n");
+}
+
+void olivia_shopper()
+{
+    cpu_work(1);        // do a bit of work fist
+    std::scoped_lock<std::mutex> lock(pencil);
+    bags_of_chips += 3;
+    printf("Olivia ADDED 3 bags of chips.\n");
+}
+
+int main (void)
+{
+    std::thread shoppers[10];
+    for (int i = 0; i < 10; i+=2)
+    {
+        shoppers[i] = std::thread(barron_shopper);
+        shoppers[i+1] = std::thread(olivia_shopper);
+    }
+    
+    for (auto& s : shoppers)
+        s.join();
+    
+    printf("We need to buy %u bags of chips.\n", bags_of_chips);
+    
+    return 0;
+}
+
+
+/* RUN 1:
+ Olivia ADDED 3 bags of chips.
+ Olivia ADDED 3 bags of chips.
+ Olivia ADDED 3 bags of chips.
+ Barron DOUBLED bags of chips.
+ Barron DOUBLED bags of chips.
+ Barron DOUBLED bags of chips.
+ Barron DOUBLED bags of chips.
+ Olivia ADDED 3 bags of chips.
+ Barron DOUBLED bags of chips.
+ Olivia ADDED 3 bags of chips.
+ We need to buy 329 bags of chips.
+ Program ended with exit code: 0
+ */
+
+/* RUND 2: (same run repeated)
+ Olivia ADDED 3 bags of chips.
+ Olivia ADDED 3 bags of chips.
+ Barron DOUBLED bags of chips.
+ Barron DOUBLED bags of chips.
+ Barron DOUBLED bags of chips.
+ Olivia ADDED 3 bags of chips.
+ Barron DOUBLED bags of chips.
+ Olivia ADDED 3 bags of chips.
+ Barron DOUBLED bags of chips.
+ Olivia ADDED 3 bags of chips.
+ We need to buy 245 bags of chips.
+ Program ended with exit code: 0
+ */

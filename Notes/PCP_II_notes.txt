@@ -112,14 +112,20 @@ Producer-Consumer Semaphore
   - Release emptyCount (emptyCount + 1)
 
 
+******** LECTURE 2 : Barriers ********
 
+*** Race Condition ***
 
+Data Racing - Race Condition are different terms
 
+Data Racing : Two or more threads concurrently access the same memory location
+- Solution: Mutual exclusion on the shared resource
 
+Race Condition: Flaw in the timing on the programs execution
+- Data races can cause race conditions too (not necessary)
 
-
-
-
+Race conditions are sometimes type of Heisenbug.
+Heisenbug: A software bug that disappears when you try to study it.
 
 
 
