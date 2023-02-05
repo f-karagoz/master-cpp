@@ -88,6 +88,55 @@ Pipeline
 - Chain of processing elements
 - Series of producer and consumers are chained
 
+*** Semaphore ***
+
+- Synchronization mechanism to control the access to the critical section
+- Can multiple threads utilize this to access to the critical
+section at the same time
+- Has a counter mechanism, limits the number of threads that can access
+
+Binary semaphore is like mutex
+- Mutex can be unlocked by the thread locked it
+- Semaphore can be acquired/release by different threads
+
+
+Producer-Consumer Semaphore
+- Two semaphores: fillCount, emptyCount
+- Producer:
+  - Acquire emptyCount (emptyCount - 1)
+  - Put item into buffer
+  - Release fillCount (fillCount + 1)
+- Consumer:
+ - Acquire fillCount (fillCount - 1) 
+  - Remove item from buffer
+  - Release emptyCount (emptyCount + 1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
