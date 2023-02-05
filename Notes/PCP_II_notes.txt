@@ -127,10 +127,9 @@ Race Condition: Flaw in the timing on the programs execution
 Race conditions are sometimes type of Heisenbug.
 Heisenbug: A software bug that disappears when you try to study it.
 
+*** Barriers ***
 
-
-
-
+Synchronize the events to prevent race condition
 
 
 
