@@ -231,22 +231,78 @@ Some languages may utlized just-in-time compilation that compile the parts
 of programs at runtime. This may effect the result.
 
 
+******** LECTURE 5 : Designing Parallel Programs ********
+
+4-stages of taking a problem and creating parallel program:
+1. Partitionin
+2. Communication
+3. Agglomeration
+4. Mapping
+
+*** Partitionin ***
+
+Break down the problem into discreate multiple tasks.
+Decompose the problem into as many small tasks as possible.
+
+- Domain (data) decomposition: Dividing the data associated with the problem
+	(if possible equally sized partitions)
+	- Block Decomposition
+	- Cyclic Decomposition
+
+- Functional decomposition: Begins by considering all the computational work
+
+*** Communication ***
+
+Coordinate task execution and share information:
+
+- Point-to-point communication: producer - consumer
+- Collective communication: broadcast - scatter - gather
+
+Synchronous Blocking Communication:
+- Tasks wait until entire communication is completed
+- Cannot do other work while in progress
+
+Asynchronous Nonblocking Communication:
+- Tasks do not wait for communication to complete
+- Can do other work while in progres
+
+Also consider the 'overhead', 'latency', 'bandwidth'
+
+*** Agglomeration ***
+
+Combine tasks and replicate data/computaion to increase efficiency
+
+Granularity = computation / communication
+
+Fine-Grained Parallesim
+- Large number of small tasks
+- Advantage - good distribution of workload (load balancing)
+- Disadvantage - low computatiom-to-communication ratio
+
+Coarse-Grained Parallesim
+- Small number of large tasks
+- Advatage - High computation-to-communication ratio
+- Disadvantage - Inefficient load balancing
 
 
+A well designed parallel program should adapt to changes in
+the number of processors. (flexibility)
 
+*** Mapping ***
 
+Specify where eeach taks will execute to minimize the total execution time.
 
+(does not apply for single-core or automated-task-scheduling systems)
+In desktop computer programs this is not a problem:
+The OS handles scheduling thread to execute on specific processor cores
 
+This is a factor on:
+- Distributed systems
+- Specilalized hardware with multiple cores
 
-
-
-
-
-
-
-
-
-
+Strategies:
+- Place tasks that can run concurrently on the different processor
+- Place tasks that communicate frequently on the same processor
 
 
 
