@@ -130,13 +130,105 @@ Heisenbug: A software bug that disappears when you try to study it.
 *** Barriers ***
 
 Synchronize the events to prevent race condition
+Has a counter feature
 
+*** Latch ***
 
+One or more threads to wait while other operations are performed
+by other one or more threads.
 
+Has a counter feature.
 
+Threads can utilize:
+- Wait at a latch till a count value reaches zero
+- Or decrement the latch value 
 
+Ways to utilize Latch:
+- Initialize count to 1
+  - A simple on/off gate
+- Initialize count to N
+  - Wait for N threads to complete some action
+  - Wait for some action to complete N times
 
+.count_down() decrements the count down but does not prevent thread from running
+.wait() prevents the thread from running till the counter reaches zero
 
+Barrier vs Latch
+- Barrier releases when certain number of threads are waiting
+- Latch releases when count value reaches zero
+
+******** LECTURE 3 : Asynchronous Tasks ********
+
+*** Computational Graph ***
+
+'Spawn' = 'Fork'
+'Synch' = 'Join'
+
+Work: Time needed to execute all of the tasks in a singel core.
+Critical path: Execution time of the longest path [Span]
+
+Ideal Parallelism = work/span
+
+*** Thread Pool ***
+
+Rather than creating new task for every work utilizing the thread pool
+can be better solution.
+This way overhead of creating new thread is avoided.
+Threads get new task from a queue.
+
+*** Future ***
+
+Olaceholder for a result initially unknown
+Mechanism to access
+Read-only
+When result is written 'resolving' 'fulfilling'
+
+*** Divide and Conquer ***
+
+1. Divide the problem into subproblems
+2. Conquer the the subproblems by solving the recursively
+3. Combine the solutions to the subproblem
+ 
+Common structe is "if" and "else"
+Divide until reach 'base case'
+
+Does it really woth it? We need to analyze the method for the problem in hand.
+
+******** LECTURE 4 : Evaluating Parallel Performance ********
+
+*** Speedup, Latency, and Throughput ***
+
+Weakscaling:
+- Variable number of processors with fixed problem size per processor
+- Accomplish more work in the same time
+
+Strongscaling:
+- Increasing number of processors
+- Same work in less size
+
+Thoughput = (#tasks) / time	[actions per time]
+
+Latency = time / task	[time]
+
+Speedup = sequential_execution_time / parallel_execution_time_with_N_workers
+
+*** Amdahl's Law ***
+
+P = Portion of the program that's parallelizable
+S = Speedup of the parallelized portion
+
+Overlall Speedup = 1 / ( (1 - P) + (P / S) )
+
+Running the program only makes sense if the program is highly parallelizable.
+
+*** Measure Speedup ***
+
+Efficiently: How well the additional resources are utilized
+
+Efiiciency = Speedup / # processors
+
+Some languages may utlized just-in-time compilation that compile the parts
+of programs at runtime. This may effect the result.
 
 
 
