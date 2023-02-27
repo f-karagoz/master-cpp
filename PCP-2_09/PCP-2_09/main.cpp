@@ -5,11 +5,13 @@
 //  Created by Furkan Karagöz on 27.02.2022.
 //  Topic:      Divide an conquer
 //  Example:    Recursively sum range of numbers
-#include <cstdio>
 
-unsigned long long recursive_sum(unsigned int lo, unsigned int hi)
+#include <cstdio>
+#include <future>
+
+unsigned long long recursive_sum(unsigned int lo, unsigned int hi, unsigned int depth=0)
 {
-    if (hi - lo <= 100) // base case threshold
+    if (depth > 3) // base case threshold
     {
         unsigned long long sum = 0;
         for (auto i=lo; i<hi; ++i)
@@ -19,9 +21,9 @@ unsigned long long recursive_sum(unsigned int lo, unsigned int hi)
     else    // divide and conquer
     {
         auto mid = (hi + lo) / 2;
-        auto left = recursive_sum(lo, mid);
-        auto right = recursive_sum(mid, hi);
-        return left + right;
+        auto left = std::async(std::launch::async, recursive_sum, lo, mid, depth+1);
+        auto right = recursive_sum(mid, hi, depth+1);
+        return left.get() + right;
     }
 }
 
@@ -35,3 +37,12 @@ int main ()
  Total: 499999999500000000
  Program ended with exit code: 0
  */
+
+/* Result-2:
+ Total: 499999999500000000
+ Program ended with exit code: 0
+ */
+
+// We have limited the number threads can be createad with 'depth' variable
+// When we pass the depth of 3 we sum the numbers
+// Therefore divide the problem to depth of 3 at max
