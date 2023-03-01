@@ -12,6 +12,7 @@
 // is equal to second matrix's # row.
 // Product dimensions are [row-1][row-2]
 
+#include <future>
 #include <thread>
 #include <cmath>
 
@@ -29,14 +30,42 @@ void sequential_matrix_multiply(long ** A, size_t num_rows_a, size_t num_cols_a,
     }
 }
 
-/* parallel implementation of matrix multiply */
-void parallel_matrix_multiply(long ** A, size_t num_rows_a, size_t num_cols_a,
-                              long ** B, size_t num_rows_b, size_t num_cols_b,
-                              long ** C) {
-    /*
-     * YOUR CODE GOES HERE
-     */
+void line_product(long ** A, size_t num_rows_a, size_t num_cols_a,
+                  long ** B, size_t num_rows_b, size_t num_cols_b,
+                  long ** C, size_t line) {
+    
+    for (size_t j=0; j<num_cols_b; j++)
+    {
+        C[line][j] = 0;
+        for (size_t k=0; k<num_cols_a; k++)
+            C[line][j] += A[line][k] * B[k][j];
+    }
 }
+
+
+void parallel_matrix_multiply(long ** A, size_t num_rows_a, size_t num_cols_a,
+                        long ** B, size_t num_rows_b, size_t num_cols_b,
+                        long ** C) {
+    
+    size_t n_threads = std::thread::hardware_concurrency();
+    
+    std::thread line_calculators[n_threads];
+    for (size_t i=0; i<num_rows_a; i++)
+    {
+        for (size_t n=0; n<n_threads && i<num_rows_a; n++, i++)
+        {
+            line_calculators[n] = std::thread(line_product,
+                                              A, num_rows_a, num_cols_a,
+                                              B, num_rows_b, num_cols_b,
+                                              C, i);
+        }
+        for (auto& t: line_calculators)
+        {
+            t.join();
+        }
+    }
+}
+
 
 int main() {
     const int NUM_EVAL_RUNS = 3;
