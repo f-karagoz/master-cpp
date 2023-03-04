@@ -14,6 +14,7 @@
 // As a result we get a sorted complete array
 
 #include <thread>
+#include <cmath>
 
 /* declaration of merge helper function */
 void merge(int * array, unsigned int left, unsigned int mid, unsigned int right);
@@ -29,13 +30,27 @@ void sequential_merge_sort(int * array, unsigned int left, unsigned int right) {
 }
 
 /* parallel implementation of merge sort */
-void parallel_merge_sort(int * array, unsigned int left, unsigned int right) {
-    /***********************
-     * YOUR CODE GOES HERE *
-     ***********************/
+void parallel_merge_sort(int * array, unsigned int left, unsigned int right, unsigned int depth = 0) {
+    if (depth >= std::log(std::thread::hardware_concurrency())) // not sure about this one
+    {
+        sequential_merge_sort(array, left, right);
+    }
+    else
+    {
+        if (left < right) {
+            // Just like sequential find the middle point
+            unsigned int mid = (left + right) / 2;
+            // Create new thread to evaluate the left part
+            std::thread left_read = std::thread(parallel_merge_sort, array, left, mid, depth+1);
+            // Right part is evaluated by the current thread
+            parallel_merge_sort(array, mid+1, right, depth+1);
+            left_read.join();
+            merge(array, left, mid, right);
+        }
+    }
 }
 
-/* helper function to merge two sorted subarrays
+/* helper function to merge and sort two subarrays
    array[l..m] and array[m+1..r] into array */
 void merge(int * array, unsigned int left, unsigned int mid, unsigned int right) {
     unsigned int num_left = mid - left + 1; // number of elements in left subarray
@@ -122,3 +137,23 @@ int main() {
     printf("Efficiency %.2f%%\n", 100*(sequential_time/parallel_time)/std::thread::hardware_concurrency());
 }
 
+/* Result-1 : N = 100000
+ Evaluating Sequential Implementation...
+ Evaluating Parallel Implementation...
+ Average Sequential Time: 17.65 ms
+   Average Parallel Time: 5.66 ms
+ Speedup: 3.12
+ Efficiency 38.98%
+ */
+
+/* Result-2 : N = 100
+ Evaluating Sequential Implementation...
+ Evaluating Parallel Implementation...
+ Average Sequential Time: 0.01 ms
+   Average Parallel Time: 0.26 ms
+ Speedup: 0.04
+ Efficiency 0.54%
+ */
+
+// The parallel algorith runs faster for sorting large arrays
+// When the arrays size is small it performs worse due to overhead of creating new threads
