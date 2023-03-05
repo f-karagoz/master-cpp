@@ -178,10 +178,10 @@ Threads get new task from a queue.
 
 *** Future ***
 
-Olaceholder for a result initially unknown
+Placeholder for a result initially unknown
 Mechanism to access
 Read-only
-When result is written 'resolving' 'fulfilling'
+When result is written 'resolving' 'fulfilling '
 
 *** Divide and Conquer ***
 
@@ -305,10 +305,4 @@ Strategies:
 - Place tasks that communicate frequently on the same processor
 
 
-
-
-
-
-
-
-
+*** end ***
