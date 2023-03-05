@@ -28,28 +28,16 @@ size_t sequential_image_downloader(int num_images) {
     return total_bytes;
 }
 
-size_t indexed_image_downloader(int first_i, int last_i) {
-    size_t total_bytes = 0;
-    for (int i=first_i; i<=last_i; i++) {
-        total_bytes += download_image(i);
-    }
-    return total_bytes;
-}
-
 /* parallel implementation of image downloader */
 size_t parallel_image_downloader(int num_images) {
     size_t total_bytes = 0;
-    int n_threads = std::thread::hardware_concurrency();
-    int n_images_per_thread = ceil( (float)num_images / n_threads );
     std::list<std::future<size_t>> downloaders;
     
-    for (int i=0; i < n_threads; ++i)
+    for (int i=1; i <= num_images; ++i)
     {
-        int first_i = i * n_images_per_thread;
-        int last_i = std::min( (i+1)*n_images_per_thread, num_images);
-        downloaders.push_back(std::async(std::launch::async, indexed_image_downloader, first_i, last_i));
+        downloaders.push_back(std::async(std::launch::async, download_image, i));
     }
-    for (int i=0; i < n_threads; ++i)
+    for (int i=0; i < num_images; ++i)
     {
         total_bytes += downloaders.front().get();
         downloaders.pop_front();
@@ -129,15 +117,15 @@ int main() {
  */
 
 /* Result: NUM_IMAGES = 10
- Average Sequential Time: 9856.91 ms
-   Average Parallel Time: 4262.07 ms
- Speedup: 2.31
- Efficiency 28.91%
+ Average Sequential Time: 10089.68 ms
+   Average Parallel Time: 2262.92 ms
+ Speedup: 4.46
+ Efficiency 55.73%
  */
 
 /* Result: NUM_IMAGES = 50
- Average Sequential Time: 49382.24 ms
-   Average Parallel Time: 11310.53 ms
- Speedup: 4.37
- Efficiency 54.58%
+ Average Sequential Time: 58233.84 ms
+   Average Parallel Time: 8820.49 ms
+ Speedup: 6.60
+ Efficiency 82.53%
  */
