@@ -25,7 +25,18 @@ GNU++20
 
 ******** LECTURE 1 : Intoroduction to Design Patterns ********
 
+Design patterns are solutions to commonly occuring problems in object oriented programming.
+Design patterns are specific organizational strategies we can use in our programs to ensure 
+that our code is easy to modify and maintain for the forseable future.
+
+
 ******** LECTURE 2 : Behavioral Patterns Group 1 ********
+
+*** Chain of Responsibility Pattern ***
+
+Use this pattern when you need to implement a series of nested handlers.
+Example: series of checks done over the user credentials.
+
 
 ******** LECTURE 3 : Behavioral Patterns Group 2 ********
 
