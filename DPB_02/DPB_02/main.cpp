@@ -26,43 +26,76 @@ public:
     }
 };
 
+class Command
+{public:
+    virtual ~Command() {};
+    virtual void execute () = 0;
+};
+
 class Button
 {
+    Command *command;
 public:
-    virtual ~Button() {};
-    virtual void click() = 0;
-};
-
-class AddTriangleButton : public Button
-{
-    Canvas *canvas;
-public:
-    void click() override {
-        canvas->addShape("triangle");
+    Button(Command *command) : command(command) {};
+    void click() {
+        command->execute();
     }
 };
 
-class AddAquareButton : public Button
+class AddShapeCommand: public Command
 {
+    std::string shapeName;
     Canvas *canvas;
 public:
-    void click() override {
-        canvas->addShape("square");
+    AddShapeCommand(const std::string & shapeName, Canvas *canvas) : shapeName(shapeName), canvas(canvas) {};
+    void execute() {
+        canvas->addShape(shapeName);
     }
 };
 
-class ClearButton : public Button
+class ClearCommand: public Command
 {
     Canvas *canvas;
 public:
-    ClearButton(Canvas *canvas) : canvas(canvas) {};
-    
-    void click () override {
+    ClearCommand(Canvas *canvas) : canvas(canvas) {};
+    void execute() {
         canvas->clearAll();
     }
 };
 
+std::string vectorToString(std::vector<std::string> v) {
+    std::string result = "";
+    for(int i=0; i < v.size(); ++i) {
+        result.append(v.at(i) + ", ");
+    }
+    return result;
+}
+
 int main (void)
 {
+
+    Canvas *canvas = new Canvas;
+    
+    Button *addTriangleButton = new Button(new AddShapeCommand("triangle", canvas));
+    Button *addSquareButton = new Button(new AddShapeCommand("square", canvas));
+    Button *clearButton = new Button(new ClearCommand(canvas));
+    
+    addTriangleButton->click();
+    std::cout << "Current canvas state: " << vectorToString(canvas->getShapes()) << "\n";
+    addSquareButton->click();
+    addSquareButton->click();
+    addTriangleButton->click();
+    std::cout << "Current canvas state: " << vectorToString(canvas->getShapes()) << "\n";
+    clearButton->click();
+    std::cout << "Current canvas state: " << vectorToString(canvas->getShapes()) << "\n";
+    
+    delete canvas;
     return 0;
 }
+
+/* Result:
+ Current canvas state: triangle,
+ Current canvas state: triangle, square, square, triangle,
+ Current canvas state:
+ Program ended with exit code: 0
+ */
