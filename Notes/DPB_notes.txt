@@ -37,6 +37,19 @@ that our code is easy to modify and maintain for the forseable future.
 Use this pattern when you need to implement a series of nested handlers.
 Example: series of checks done over the user credentials.
 
+*** Command Pattern ***
+
+Reduce coupling between classes that call one another and make functionality more resuseable
+between similar classes.
+
+
+*** Mediator Pattern ***
+
+When you need to reduce coupling and organize complex dependencies between a number of
+tighly coupled classes.
+Instead of having each class know about the other classes, create a mediator object that
+manges all the relationship between theese classes.
+
 
 ******** LECTURE 3 : Behavioral Patterns Group 2 ********
 
